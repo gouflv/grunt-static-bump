@@ -10,7 +10,7 @@ var _ = require('underscore')
 
 var view_dir = app.setting.view_dir
 
-var linkRegex = /href="([^"]*\.css[^"]*)"/gi
+var rlink = /href="([^"]*\.css[^"]*)"|src="([^"]*\.js[^"]*)"/gi
 
 /**
  * initImportMapping
@@ -53,15 +53,18 @@ exports.initImportMapping = function() {
 function inspectContent(html) {
 	var matched = []
 	var rs;
-	while( (rs = linkRegex.exec(html)) ) {
+	while( (rs = rlink.exec(html)) ) {
 
-		var query = querystring.parse( url.parse(rs[1]).query ) 
+		var current = rs[1] || rs[2]
+
+		var query = querystring.parse( url.parse(current).query ) 
 		matched.push({
-			href: rs[1],
-			src: basename(rs[1]),
+			href: current,
+			src: basename(current),
 			hash: query.md5 || null
 		})		
 	}
+
 	return matched.length ? matched : null
 }
 

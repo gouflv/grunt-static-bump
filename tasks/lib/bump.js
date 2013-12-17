@@ -27,6 +27,9 @@ function bumpImports() {
 	var imports = bumpRelation.initImportMapping()
 	
 	app.files.forEach(function(src_file) {
+		
+		grunt.log.debug(src_file.name)
+
 		// 引入资源的页面
 		var pages_import = imports[src_file.name]
 		if(pages_import) {
@@ -41,8 +44,9 @@ function bumpImports() {
 		}
 	})
 	updated.forEach(function(src_file) {
-		grunt.log.writeln('update', src_file.name, '--->', src_file.hash)
-		grunt.log.writeln('update page', src_file.update_page)
+		grunt.log.writeln('*update', src_file.name, '--->', src_file.hash)
+		grunt.log.writeln('in page', src_file.update_page)
+		grunt.log.writeln()
 	});
 	grunt.log.writeln('update all', updated.length)
 }
