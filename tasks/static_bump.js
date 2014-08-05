@@ -28,7 +28,6 @@ module.exports = function(grunt) {
 				src: src,
 				name: path.basename(src),
 				ext: path.extname(src),
-				type: util.detectFileTypeByDir(src),
 				hash: util.fhash(src),
 				stat: BumpStat.Unchanged
 			})
