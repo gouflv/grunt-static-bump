@@ -7,6 +7,7 @@ var url = require('url')
 var querystring = require('querystring')
 var walk = require('walkdir')
 var _ = require('underscore')
+var util = require('./util')
 
 var view_dir = app.setting.view_dir
 
@@ -32,8 +33,12 @@ exports.initImportMapping = function() {
 		var importArr = imports[page]
 
 		importArr.forEach(function(rs) {
-			mapping[rs.src] = mapping[rs.src] || []
-			mapping[rs.src].push({
+			var static_path = rs.src
+			var src = replace_static_path(static_path)
+			grunt.log.debug('replace_static_path', src)
+
+			mapping[src] = mapping[src] || []
+			mapping[src].push({
 				page: page,
 				href: rs.href,
 				hash: rs.hash
@@ -44,6 +49,13 @@ exports.initImportMapping = function() {
 	grunt.log.debug('imports mapping', require('util').inspect(mapping))
 
 	return mapping
+}
+
+function replace_static_path(src) {
+	if(app.setting.__STATICS__)
+		return src.replace('__STATICS__', app.setting.__STATICS__)
+	else
+		return src
 }
 
 /**
@@ -60,19 +72,10 @@ function inspectContent(html) {
 		var query = querystring.parse( url.parse(current).query ) 
 		matched.push({
 			href: current,
-			src: basename(current),
+			src: util.orgin_file_path(current),
 			hash: query.md5 || null
 		})		
 	}
 
 	return matched.length ? matched : null
-}
-
-function basename(url) {
-    var fname = path.basename(url)
-    var urls = fname.split('?')
-    if(urls.length >= 2) {
-        return urls[0]
-    }
-    return fname
 }
